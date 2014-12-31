@@ -7,7 +7,10 @@ import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -23,14 +26,57 @@ public class CallBlocker extends BroadcastReceiver {
     TelephonyManager telephonyManager;
     ITelephony telephonyService;
     String number;
+    Boolean acceptCallFromHiddenNumbers=false; //false by default
 
     @Override
     public void onReceive(Context context, Intent intent) {
         //Log.d("Caller (from intent)","numero: "+intent.getStringExtra("incoming_number"));
+        //Log.d("estado; ",intent.getStringExtra("state"));
+        if(intent.getStringExtra("state").equals("RINGING")) {
         Bundle bb = intent.getExtras();
-        blockCall(context,bb);
+            if(acceptCallFromHiddenNumbers){
+                if(/*is in own blackList*/false){
+                    blockCall(context, bb);
+                } else {
+
+                    if(/*is in blackList*/ true){
+                        if(!isAContact(context,intent)) { //is a contact?
+                            blockCall(context, bb);
+                        }
+
+                    }
+                }
+
+            }
+            else {
+                if(intent.getStringExtra("incoming_number")==null){
+                    blockCall(context, bb);
+                } else {
+                    if(/*is in own blackList*/false){
+                        blockCall(context, bb);
+                    } else {
+
+                        if(/*is in blackList*/ true){
+                            if(!isAContact(context,intent)) { //is a contact?
+                                blockCall(context, bb);
+                            }
+
+                        }
+                    }
+                }
+
+            }
+
+        }
 
     }
+
+    private boolean isAContact(Context context, Intent intent){
+        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(intent.getStringExtra("incoming_number")));
+        Cursor phone = context.getContentResolver().query(uri, new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME}, null, null, null);
+        return phone.getCount()!=0;
+    }
+
         public void blockCall(Context c, Bundle b){
             TelephonyManager telephony = (TelephonyManager)
                     c.getSystemService(Context.TELEPHONY_SERVICE);
@@ -41,10 +87,8 @@ public class CallBlocker extends BroadcastReceiver {
                 telephonyService = (ITelephony) m.invoke(telephony);
                 //telephonyService.silenceRinger();
                 telephonyService.endCall();
-                if (null != b.getString("incoming_number")){
                     number = b.getString("incoming_number");
                     showNotification(c);
-                }
 
                 Log.d("Caller (from bb)","numero: "+number);
                 //Log.d("Colgar :",b.toString());
@@ -64,11 +108,12 @@ public class CallBlocker extends BroadcastReceiver {
 
         // Set the icon, scrolling text and timestamp
         Notification notification = new Notification.Builder(context)
-                .setContentTitle("We just canceled a call")
-                .setContentText(number)
+                .setContentTitle("Bloqueamos una llamada peligrosa")
+                .setContentText("numero : "+number)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setWhen(0)
-                .build(); //Require API 16
+                .getNotification(); //Require API 16
+                //getNotification()
 
         // The PendingIntent to launch our activity if the user selects this notification
         /*PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
