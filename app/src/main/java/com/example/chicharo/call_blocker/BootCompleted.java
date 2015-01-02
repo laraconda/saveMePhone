@@ -8,6 +8,7 @@ import android.util.Log;
 
 /**
  * Created by chicharo on 30/12/14.
+ * No es necesario 'iniciar' el receiver callBlocker. Lo hace solo.
  */
 public class BootCompleted extends BroadcastReceiver {
     @Override

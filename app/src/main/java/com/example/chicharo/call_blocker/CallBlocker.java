@@ -1,6 +1,8 @@
 package com.example.chicharo.call_blocker;
 
 import com.android.internal.telephony.ITelephony;
+import com.example.chicharo.call_blocker.DataBase.MySQLiteHelper;
+import com.example.chicharo.call_blocker.DataBase.PhonesDataSource;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -8,6 +10,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -25,22 +28,21 @@ public class CallBlocker extends BroadcastReceiver {
     NotificationManager mNM;
     TelephonyManager telephonyManager;
     ITelephony telephonyService;
-    String number;
     Boolean acceptCallFromHiddenNumbers=false; //false by default
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        //Log.d("Caller (from intent)","numero: "+intent.getStringExtra("incoming_number"));
-        //Log.d("estado; ",intent.getStringExtra("state"));
+        String incomingNumber = intent.getStringExtra("incoming_number");
+        Log.d("estado; ",intent.getStringExtra("state"));
         if(intent.getStringExtra("state").equals("RINGING")) {
         Bundle bb = intent.getExtras();
             if(acceptCallFromHiddenNumbers){
-                if(/*is in own blackList*/false){
+                if(isInOwnBlackList(context,incomingNumber)){
                     blockCall(context, bb);
                 } else {
 
                     if(/*is in blackList*/ true){
-                        if(!isAContact(context,intent)) { //is a contact?
+                        if(!isAContact(context,incomingNumber)) { //is a contact?
                             blockCall(context, bb);
                         }
 
@@ -52,12 +54,12 @@ public class CallBlocker extends BroadcastReceiver {
                 if(intent.getStringExtra("incoming_number")==null){
                     blockCall(context, bb);
                 } else {
-                    if(/*is in own blackList*/false){
+                    if(isInOwnBlackList(context,incomingNumber)){
                         blockCall(context, bb);
                     } else {
 
                         if(/*is in blackList*/ true){
-                            if(!isAContact(context,intent)) { //is a contact?
+                            if(!isAContact(context,incomingNumber)) { //is a contact?
                                 blockCall(context, bb);
                             }
 
@@ -71,8 +73,17 @@ public class CallBlocker extends BroadcastReceiver {
 
     }
 
-    private boolean isAContact(Context context, Intent intent){
-        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(intent.getStringExtra("incoming_number")));
+    private boolean isInOwnBlackList(Context context,String incomingNumber){
+        PhonesDataSource pDS = new PhonesDataSource(context);
+        pDS.open();
+        Boolean bool = pDS.isInOwnBlackList(incomingNumber);
+        pDS.close();
+
+        return bool;
+    }
+
+    private boolean isAContact(Context context, String incomingNumber){
+        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(incomingNumber));
         Cursor phone = context.getContentResolver().query(uri, new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME}, null, null, null);
         return phone.getCount()!=0;
     }
@@ -87,10 +98,10 @@ public class CallBlocker extends BroadcastReceiver {
                 telephonyService = (ITelephony) m.invoke(telephony);
                 //telephonyService.silenceRinger();
                 telephonyService.endCall();
-                    number = b.getString("incoming_number");
-                    showNotification(c);
+                    String Inumber = b.getString("incoming_number");
+                    showNotification(c, Inumber);
 
-                Log.d("Caller (from bb)","numero: "+number);
+                Log.d("Caller (from bb)","numero: "+Inumber);
                 //Log.d("Colgar :",b.toString());
 
             } catch (Exception e) {
@@ -101,7 +112,7 @@ public class CallBlocker extends BroadcastReceiver {
     /**
      * Show a notification while this service is running.
      */
-    private void showNotification(Context context) {
+    private void showNotification(Context context, String number) {
         // In this sample, we'll use the same text for the ticker and the expanded notification
         //CharSequence text = getText(R.string.remote_service_started);
         mNM = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -112,7 +123,7 @@ public class CallBlocker extends BroadcastReceiver {
                 .setContentText("numero : "+number)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setWhen(0)
-                .getNotification(); //Require API 16
+                .getNotification();
                 //getNotification()
 
         // The PendingIntent to launch our activity if the user selects this notification
