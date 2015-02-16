@@ -1,18 +1,17 @@
 package com.example.chicharo.call_blocker;
 
-import android.app.Activity;
 import android.app.ListActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Toast;
-import java.util.List;
 
 import com.example.chicharo.call_blocker.DataBase.PhonesDataSource;
 import com.example.chicharo.call_blocker.Models.phone_model;
+
+import java.util.List;
 
 public class myBlackList extends ListActivity {
     PhonesDataSource phonesDataSource;
@@ -42,7 +41,7 @@ public class myBlackList extends ListActivity {
                     pm = phonesDataSource.createPhone(editNewPhone.getText().toString());
                     adapter.add(pm);
                 } else {
-                    Toast.makeText(getApplicationContext(), "Please enter " + "\n" + " valid phone number", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Please enter a valid phone number", Toast.LENGTH_SHORT).show();
                 }
             }
         });

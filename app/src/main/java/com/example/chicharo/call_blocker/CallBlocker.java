@@ -1,28 +1,22 @@
 package com.example.chicharo.call_blocker;
 
-import com.android.internal.telephony.ITelephony;
-import com.example.chicharo.call_blocker.DataBase.MySQLiteHelper;
-import com.example.chicharo.call_blocker.DataBase.PhonesDataSource;
-
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.widget.Toast;
+
+import com.android.internal.telephony.ITelephony;
+import com.example.chicharo.call_blocker.DataBase.PhonesDataSource;
 
 import java.lang.reflect.Method;
 
-/**
- * Created by chicharo on 30/12/14.
- */
 public class CallBlocker extends BroadcastReceiver {
 
     NotificationManager mNM;
