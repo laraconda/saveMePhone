@@ -49,7 +49,7 @@ MERGED from com.android.support:support-v4:21.0.3:16:5
 		ADDED from AndroidManifest.xml:14:9
 	android:theme
 		ADDED from AndroidManifest.xml:16:9
-activity#com.example.chicharo.call_blocker.MainActivity
+activity#com.example.chicharo.call_blocker.Activities.MainActivity
 ADDED from AndroidManifest.xml:17:9
 	android:label
 		ADDED from AndroidManifest.xml:19:13
@@ -69,7 +69,7 @@ category#android.intent.category.LAUNCHER
 ADDED from AndroidManifest.xml:23:17
 	android:name
 		ADDED from AndroidManifest.xml:23:27
-service#com.example.chicharo.call_blocker.IncomingCallListener
+service#com.example.chicharo.call_blocker.Listener.IncomingCallListener
 ADDED from AndroidManifest.xml:26:9
 	android:enabled
 		ADDED from AndroidManifest.xml:27:13
@@ -79,7 +79,7 @@ ADDED from AndroidManifest.xml:26:9
 		ADDED from AndroidManifest.xml:29:13
 	android:name
 		ADDED from AndroidManifest.xml:28:13
-receiver#com.example.chicharo.call_blocker.CallBlocker
+receiver#com.example.chicharo.call_blocker.Listener.CallBlocker
 ADDED from AndroidManifest.xml:33:9
 	android:name
 		ADDED from AndroidManifest.xml:33:19
@@ -91,7 +91,7 @@ action#android.intent.action.PHONE_STATE
 ADDED from AndroidManifest.xml:35:17
 	android:name
 		ADDED from AndroidManifest.xml:35:25
-receiver#com.example.chicharo.call_blocker.BootCompleted
+receiver#com.example.chicharo.call_blocker.Listener.BootCompleted
 ADDED from AndroidManifest.xml:38:9
 	android:name
 		ADDED from AndroidManifest.xml:38:19
@@ -103,7 +103,7 @@ action#android.Intent.ACTION_BOOT_COMPLETED
 ADDED from AndroidManifest.xml:40:17
 	android:name
 		ADDED from AndroidManifest.xml:40:25
-activity#com.example.chicharo.call_blocker.myBlackList
+activity#com.example.chicharo.call_blocker.Activities.myBlackList
 ADDED from AndroidManifest.xml:43:9
 	android:name
 		ADDED from AndroidManifest.xml:43:19

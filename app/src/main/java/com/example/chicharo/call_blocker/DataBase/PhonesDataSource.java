@@ -7,7 +7,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.example.chicharo.call_blocker.Models.phone_model;
+import com.example.chicharo.call_blocker.Models.PhoneModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +32,7 @@ public class PhonesDataSource {
         dbHelper.close();
     }
 
-    public phone_model createPhone(String number) {
+    public PhoneModel createPhone(String number) {
         ContentValues values = new ContentValues();
         values.put(MySQLiteHelper.COLUMN_NUMBER, number);
         long insertId = database.insert(MySQLiteHelper.TABLE_PHONE, null,
@@ -41,12 +41,12 @@ public class PhonesDataSource {
                 allColumns, MySQLiteHelper.COLUMN_ID + " = " + insertId, null,
                 null, null, null);
         cursor.moveToFirst();
-        phone_model newPhone = cursorToPhone(cursor);
+        PhoneModel newPhone = cursorToPhone(cursor);
         cursor.close();
         return newPhone;
     }
 
-    public void deleteComment(phone_model phone) {
+    public void deleteComment(PhoneModel phone) {
         long id = phone.get_id();
         System.out.println("Comment deleted with id: " + id);
         database.delete(MySQLiteHelper.TABLE_PHONE, MySQLiteHelper.COLUMN_ID
@@ -63,8 +63,8 @@ public class PhonesDataSource {
         return c.getCount()!=0;
     }
 
-    public List<phone_model> getAllComments() {
-        List<phone_model> Lphones = new ArrayList<phone_model>();
+    public List<PhoneModel> getAllComments() {
+        List<PhoneModel> Lphones = new ArrayList<PhoneModel>();
 
         Cursor cursor = database.query(MySQLiteHelper.TABLE_PHONE,
                 allColumns, null, null, null, null, null);
@@ -72,7 +72,7 @@ public class PhonesDataSource {
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            phone_model phones = cursorToPhone(cursor);
+            PhoneModel phones = cursorToPhone(cursor);
             Lphones.add(phones);
             cursor.moveToNext();
         }
@@ -81,8 +81,8 @@ public class PhonesDataSource {
         return Lphones;
     }
 
-    private phone_model cursorToPhone(Cursor cursor) {
-        phone_model pm = new phone_model();
+    private PhoneModel cursorToPhone(Cursor cursor) {
+        PhoneModel pm = new PhoneModel();
         pm.set_id(cursor.getLong(0));
         pm.setNumber(cursor.getString(1));
         return pm;
