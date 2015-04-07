@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,7 +14,7 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.android.internal.telephony.ITelephony;
-import com.example.chicharo.call_blocker.DataBase.PhonesDataSource;
+import com.example.chicharo.call_blocker.DataBases.PhonesDataSource;
 import com.example.chicharo.call_blocker.R;
 
 import java.lang.reflect.Method;
@@ -24,10 +25,14 @@ public class CallBlocker extends BroadcastReceiver {
     private NotificationManager notificationManager;
     private TelephonyManager telephonyManager;
     private ITelephony telephonyService;
+    private static final String settingSharedPreferencesName = "Settings";
+    private static final String allowHiddenNumbers = "allowHiddenNumbers";
+    private static final String intentStringExtra = "state";
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Boolean acceptCallFromHiddenNumbers=false; //false by default
+
+        Boolean acceptCallFromHiddenNumbers=acceptCallFromHiddenNumbers(context);
         if(intent.getStringExtra("state").equals("RINGING")) {
             String incomingNumber = intent.getStringExtra("incoming_number");
             Log.d("incoming number: ", incomingNumber);
@@ -59,6 +64,12 @@ public class CallBlocker extends BroadcastReceiver {
                 }
             }
         }
+    }
+
+    private boolean acceptCallFromHiddenNumbers(Context context){
+        SharedPreferences settings = context.getSharedPreferences(settingSharedPreferencesName, Context.MODE_PRIVATE);
+        boolean allowCallFromHiddenNumbers = settings.getBoolean(allowHiddenNumbers, true);
+        return allowCallFromHiddenNumbers;
     }
 
     private boolean isInOwnBlackList(Context context,String incomingNumber){

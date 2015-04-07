@@ -15,5 +15,12 @@
         android:textColor="@color/primary"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
+    <ToggleButton
+        android:id="@+id/tggbtn_HiddenNumbers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textOn="Vibrate on"
+        android:textOff="Vibrate off"/>
 
 </RelativeLayout>
