@@ -26,7 +26,7 @@ public class myBlackList extends ListActivity implements View.OnClickListener{
         phonesDataSource = new PhonesDataSource(this);
         phonesDataSource.open();
         List<PhoneModel> values = phonesDataSource.getAllComments();
-        BlockedPhonesAdapter = new ArrayAdapter<PhoneModel>(this,android.R.layout.simple_list_item_1,values);
+        BlockedPhonesAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,values);
         setListAdapter(BlockedPhonesAdapter);
         editTextAddNewPhone = (EditText)findViewById(R.id.edit_newPhone);
         Button btnAddNewPhone = (Button)findViewById(R.id.btn_newPhone);
@@ -41,7 +41,8 @@ public class myBlackList extends ListActivity implements View.OnClickListener{
                 phoneModel = phonesDataSource.createPhone(editTextAddNewPhone.getText().toString());
                 BlockedPhonesAdapter.add(phoneModel);
             } else {
-                Toast.makeText(getApplicationContext(), "This is not a valid phone number", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "This is not a valid phone number",
+                        Toast.LENGTH_SHORT).show();
             }
         } else if(v.getId() == R.id.btn_DeleteAll){
             phonesDataSource.deleteAll();

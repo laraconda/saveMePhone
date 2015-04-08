@@ -13,7 +13,8 @@ import android.widget.ToggleButton;
 
 import com.example.chicharo.call_blocker.R;
 
-public class MainActivity extends ActionBarActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
+public class MainActivity extends ActionBarActivity implements View.OnClickListener,
+        CompoundButton.OnCheckedChangeListener {
 
     private static final String settingSharedPreferencesName = "Settings";
     private static final String allowHiddenNumbers = "allowHiddenNumbers";
@@ -45,14 +46,16 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     }
 
     public void setAllowHiddenNumbersSharedPreferences(boolean isChecked){
-        SharedPreferences pref = getApplicationContext().getSharedPreferences(settingSharedPreferencesName, Context.MODE_PRIVATE); // 0 - for private mode
+        SharedPreferences pref = getApplicationContext().getSharedPreferences(settingSharedPreferencesName,
+                Context.MODE_PRIVATE); // 0 - for private mode
         SharedPreferences.Editor editor = pref.edit();
         editor.putBoolean(allowHiddenNumbers, isChecked);
-        editor.commit();
+        editor.apply();
     }
 
     public void checkAllowHiddenNumbersSharedPreferences(){
-        SharedPreferences settings = getApplicationContext().getSharedPreferences(settingSharedPreferencesName, Context.MODE_PRIVATE);
+        SharedPreferences settings = getApplicationContext().getSharedPreferences(settingSharedPreferencesName,
+                Context.MODE_PRIVATE);
         try{
             settings.getBoolean(allowHiddenNumbers, true);
         } catch(Exception e) {
@@ -61,11 +64,13 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     }
 
     private boolean acceptCallFromHiddenNumbers() {
-        SharedPreferences settings = getApplicationContext().getSharedPreferences(settingSharedPreferencesName, Context.MODE_PRIVATE);
+        SharedPreferences settings = getApplicationContext().getSharedPreferences(settingSharedPreferencesName,
+                Context.MODE_PRIVATE);
         boolean allowCallFromHiddenNumbers = false;
         try{
             allowCallFromHiddenNumbers = settings.getBoolean(allowHiddenNumbers, true);
         } catch(Exception e) {
+            System.out.print("error" + e);
         }
         return allowCallFromHiddenNumbers;
     }
