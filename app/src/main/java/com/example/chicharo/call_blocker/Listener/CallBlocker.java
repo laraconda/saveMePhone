@@ -1,4 +1,4 @@
-package com.example.chicharo.call_blocker;
+package com.example.chicharo.call_blocker.Listener;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,7 +15,9 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.android.internal.telephony.ITelephony;
-import com.example.chicharo.call_blocker.DataBase.PhonesDataSource;
+import com.example.chicharo.call_blocker.Activities.MainActivity;
+import com.example.chicharo.call_blocker.DataBases.PhonesDataSource;
+import com.example.chicharo.call_blocker.R;
 
 import java.lang.reflect.Method;
 import java.util.Calendar;
@@ -24,37 +27,43 @@ public class CallBlocker extends BroadcastReceiver {
     NotificationManager mNM;
     TelephonyManager telephonyManager;
     ITelephony telephonyService;
-    Boolean acceptCallFromHiddenNumbers=false; //false by default
+
+    private static final String SETTINGS_SHARED_PREFERENCES_NAME = "Settings";
+    private static final String ALLOW_HIDDEN_NUMBERS = "allowHiddenNumbers";
+
     public final String INCOMING_NUMBER = "incoming_number";
     public final String EXTRA_STRING_STATE = "state";
     public final String PHONE_STATE_RINGING = "RINGING";
-    public final String CONTENT_TITLE = "Bloqueamos pelgrosa llamada";
-    public final String CONTENT_TEXT = ""; // Dont forget the last blank space
+
     @Override
     public void onReceive(Context context, Intent intent) {
         String incomingNumber = intent.getStringExtra(INCOMING_NUMBER);
+        boolean isNumberAContact = isAContact(context,incomingNumber);
+        boolean blockHiddenNumbers = blockCallFromHiddenNumbers(context);
+        boolean isInOwnBlackList = isInOwnBlackList(context,incomingNumber);
+
         if(intent.getStringExtra(EXTRA_STRING_STATE).equals(PHONE_STATE_RINGING)) {
         Bundle bb = intent.getExtras();
-            if(acceptCallFromHiddenNumbers){
-                if(isInOwnBlackList(context,incomingNumber)){
+            if(!blockHiddenNumbers){
+                if(isInOwnBlackList){
                     blockCall(context, bb);
                 } else {
                     if(/*is in blackList*/ false){
-                        if(!isAContact(context,incomingNumber)) { //is a contact?
+                        if(!isNumberAContact) { //is a contact?
                             blockCall(context, bb);
                         }
                     }
                 }
             }
             else {
-                if(intent.getStringExtra(INCOMING_NUMBER)==null){
+                if(incomingNumber==null){
                     blockCall(context, bb);
                 } else {
-                    if(isInOwnBlackList(context,incomingNumber)){
+                    if(isInOwnBlackList){
                         blockCall(context, bb);
                     } else {
                         if(/*is in blackList*/ false){
-                            if(!isAContact(context,incomingNumber)) { //is a contact?
+                            if(!isNumberAContact) { //is a contact?
                                 blockCall(context, bb);
                             }
                         }
@@ -62,6 +71,18 @@ public class CallBlocker extends BroadcastReceiver {
                 }
             }
         }
+    }
+
+    private boolean blockCallFromHiddenNumbers(Context context) {
+        SharedPreferences settings = context.getSharedPreferences(SETTINGS_SHARED_PREFERENCES_NAME,
+                Context.MODE_PRIVATE);
+        boolean blockCallFromHiddenNumbers = false;
+        try{
+            blockCallFromHiddenNumbers = settings.getBoolean(ALLOW_HIDDEN_NUMBERS, true);
+        } catch(Exception e) {
+            System.out.print("error" + e);
+        }
+        return blockCallFromHiddenNumbers;
     }
 
     private boolean isInOwnBlackList(Context context,String incomingNumber){
@@ -79,25 +100,24 @@ public class CallBlocker extends BroadcastReceiver {
         return phone.getCount()!=0;
     }
 
-        public void blockCall(Context ctx, Bundle b){
-            TelephonyManager telephony = (TelephonyManager)
-                    ctx.getSystemService(Context.TELEPHONY_SERVICE);
-            try {
-                Class cls = Class.forName(telephony.getClass().getName());
-                Method m = cls.getDeclaredMethod("getITelephony");
-                m.setAccessible(true);
-                telephonyService = (ITelephony) m.invoke(telephony);
-                //telephonyService.silenceRinger();
-                telephonyService.endCall();
-                String incoming_number = b.getString(INCOMING_NUMBER);
-                Long current_time = getCurrentTime();
-                showNotification(ctx, incoming_number, current_time);
+    public void blockCall(Context ctx, Bundle b){
+        TelephonyManager telephony = (TelephonyManager)
+            ctx.getSystemService(Context.TELEPHONY_SERVICE);
+        try {
+            Class cls = Class.forName(telephony.getClass().getName());
+            Method m = cls.getDeclaredMethod("getITelephony");
+            m.setAccessible(true);
+            telephonyService = (ITelephony) m.invoke(telephony);
+            //telephonyService.silenceRinger();
+            telephonyService.endCall();
+            String incoming_number = b.getString(INCOMING_NUMBER);
+            Long current_time = getCurrentTime();
+            showNotification(ctx, incoming_number, current_time);
 
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        } catch (Exception e) {
+        e.printStackTrace();
+        }
     }
-
 
     public Long getCurrentTime(){
         Calendar calendar = Calendar.getInstance();
@@ -105,16 +125,22 @@ public class CallBlocker extends BroadcastReceiver {
         return current_time;
     }
 
-    /**
-     * Show a notification while this service is running.
-     */
     private void showNotification(Context context, String number, Long curent_time) {
+        String content_title = context.getResources().getString(R.string.notification_block_call_content_title);
+        String content_text = context.getResources().getString(R.string.notification_block_call_content_text);
+
         Intent intent = new Intent(context, MainActivity.class);
         PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
+        if(number == null){
+            content_title = context.getResources().getString(R.string.notification_block_call_private_content_title);
+            content_text = context.getResources().getString(R.string.notification_block_call_private_content_text);
+            number = "";
+        }
+
         Notification notification = new Notification.Builder(context)
-                .setContentTitle(CONTENT_TITLE)
-                .setContentText(CONTENT_TEXT + number)
+                .setContentTitle(content_title)
+                .setContentText(content_text + number)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setContentIntent(pIntent)
                 .setWhen(curent_time)

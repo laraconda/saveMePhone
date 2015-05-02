@@ -3,9 +3,8 @@
     package="com.example.chicharo.call_blocker" >
 
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.CALL_PHONE"/>
-    <uses-permission android:name="android.permission.MODIFY_PHONE_STATE"/> //Hay que poner un listener al estado para ver si no hay alteraciones.
+    <!--<uses-permission android:name="android.permission.MODIFY_PHONE_STATE"/>--> //Hay que poner un listener al estado para ver si no hay alteraciones.
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
@@ -15,7 +14,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".MainActivity"
+            android:name=".Activities.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,17 +22,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <receiver android:name=".CallBlocker">
+        <receiver android:name=".Listener.CallBlocker">
             <intent-filter android:priority="1000">
                 <action android:name="android.intent.action.PHONE_STATE"/>
             </intent-filter>
         </receiver>
-        <receiver android:name=".BootCompleted">
+        <receiver android:name=".Listener.BootCompleted">
             <intent-filter android:priority="1000">
                 <action android:name="android.Intent.ACTION_BOOT_COMPLETED"/>
             </intent-filter>
             </receiver>
-        <activity android:name=".myBlackList"/>
+        <activity android:name=".Activities.myBlackList"/>
     </application>
 
 </manifest>

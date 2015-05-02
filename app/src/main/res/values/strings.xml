@@ -11,5 +11,10 @@
     <string name="clear">Clear</string>
     <string name="hint">Block number</string>
     <string name="blacklist">My blacklist</string>
+    <string name="block_hidden_numbers">Block private numbers</string>
+    <string name="notification_block_call_private_content_title">Private call blocked</string>
+    <string name="notification_block_call_private_content_text">Private number</string>
+    <string name="notification_block_call_content_title">Dangerous call blocked</string>
+    <string name="notification_block_call_content_text"></string>
 </resources>
 

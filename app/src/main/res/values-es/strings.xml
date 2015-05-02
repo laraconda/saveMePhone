@@ -11,5 +11,9 @@
     <string name="clear">Limpiar</string>
     <string name="hint">Bloquear numero</string>
     <string name="blacklist">Mi lista negra</string>
+    <string name="block_hidden_numbers">Bloquear números privados</string>
+    <string name="notification_block_call_private_content_title">Bloqueamos llamada privada</string>
+    <string name="notification_block_call_private_content_text">Número privado</string>
+    <string name="notification_block_call_content_title">Bloqueamos llamada peligrosa</string>
+    <string name="notification_block_call_content_text"></string>
 </resources>
-

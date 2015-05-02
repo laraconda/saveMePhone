@@ -5,15 +5,26 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
 
+    <Switch
+        android:id="@+id/switch_hidden_numbers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/block_hidden_numbers"
+        android:textStyle="bold"
+        android:switchPadding="23dp"
+        android:layout_marginTop="130dp"
+        android:layout_marginBottom="26dp"
+        android:layout_centerHorizontal="true"/>
+
     <Button
         style="?android:attr/buttonBarButtonStyle"
         android:id="@+id/btn_myBlackList"
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:text="@string/blacklist"
-        android:gravity="center"
         android:textColor="@color/primary"
-        android:layout_centerVertical="true"
+        android:layout_below="@id/switch_hidden_numbers"
         android:layout_centerHorizontal="true" />
+
 
 </RelativeLayout>
