@@ -23,13 +23,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service
-            android:enabled="true"
-            android:name=".IncomingCallListener"
-            android:icon="@drawable/ic_launcher"
-            android:label="@string/service_name">
-
-        </service>
         <receiver android:name=".CallBlocker">
             <intent-filter android:priority="1000">
                 <action android:name="android.intent.action.PHONE_STATE"/>

@@ -7,9 +7,9 @@
     <string name="remote_service_started">remote_service_started</string>
     <string name="remote_service_stopped">remote_service_stopped</string>
     <string name="remote_service_label">Marina and the Diamonds</string>
-    <string name="add">Add</string>
-    <string name="clear">Clear</string>
-    <string name="hint">Block number</string>
-    <string name="blacklist">My blacklist</string>
+    <string name="add">Añadir</string>
+    <string name="clear">Limpiar</string>
+    <string name="hint">Bloquear numero</string>
+    <string name="blacklist">Mi lista negra</string>
 </resources>
 
