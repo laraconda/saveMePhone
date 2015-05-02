@@ -10,7 +10,7 @@
         android:id="@+id/btn_myBlackList"
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:text="My BlackList"
+        android:text="@string/blacklist"
         android:gravity="center"
         android:textColor="@color/primary"
         android:layout_centerVertical="true"
