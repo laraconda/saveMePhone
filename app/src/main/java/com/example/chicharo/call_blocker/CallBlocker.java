@@ -2,6 +2,7 @@ package com.example.chicharo.call_blocker;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +17,7 @@ import com.android.internal.telephony.ITelephony;
 import com.example.chicharo.call_blocker.DataBase.PhonesDataSource;
 
 import java.lang.reflect.Method;
+import java.util.Calendar;
 
 public class CallBlocker extends BroadcastReceiver {
 
@@ -23,48 +25,43 @@ public class CallBlocker extends BroadcastReceiver {
     TelephonyManager telephonyManager;
     ITelephony telephonyService;
     Boolean acceptCallFromHiddenNumbers=false; //false by default
-
+    public final String INCOMING_NUMBER = "incoming_number";
+    public final String EXTRA_STRING_STATE = "state";
+    public final String PHONE_STATE_RINGING = "RINGING";
+    public final String CONTENT_TITLE = "Bloqueamos pelgrosa llamada";
+    public final String CONTENT_TEXT = ""; // Dont forget the last blank space
     @Override
     public void onReceive(Context context, Intent intent) {
-        String incomingNumber = intent.getStringExtra("incoming_number");
-        Log.d("estado; ",intent.getStringExtra("state"));
-        if(intent.getStringExtra("state").equals("RINGING")) {
+        String incomingNumber = intent.getStringExtra(INCOMING_NUMBER);
+        if(intent.getStringExtra(EXTRA_STRING_STATE).equals(PHONE_STATE_RINGING)) {
         Bundle bb = intent.getExtras();
             if(acceptCallFromHiddenNumbers){
                 if(isInOwnBlackList(context,incomingNumber)){
                     blockCall(context, bb);
                 } else {
-
-                    if(/*is in blackList*/ true){
+                    if(/*is in blackList*/ false){
                         if(!isAContact(context,incomingNumber)) { //is a contact?
                             blockCall(context, bb);
                         }
-
                     }
                 }
-
             }
             else {
-                if(intent.getStringExtra("incoming_number")==null){
+                if(intent.getStringExtra(INCOMING_NUMBER)==null){
                     blockCall(context, bb);
                 } else {
                     if(isInOwnBlackList(context,incomingNumber)){
                         blockCall(context, bb);
                     } else {
-
-                        if(/*is in blackList*/ true){
+                        if(/*is in blackList*/ false){
                             if(!isAContact(context,incomingNumber)) { //is a contact?
                                 blockCall(context, bb);
                             }
-
                         }
                     }
                 }
-
             }
-
         }
-
     }
 
     private boolean isInOwnBlackList(Context context,String incomingNumber){
@@ -82,9 +79,9 @@ public class CallBlocker extends BroadcastReceiver {
         return phone.getCount()!=0;
     }
 
-        public void blockCall(Context c, Bundle b){
+        public void blockCall(Context ctx, Bundle b){
             TelephonyManager telephony = (TelephonyManager)
-                    c.getSystemService(Context.TELEPHONY_SERVICE);
+                    ctx.getSystemService(Context.TELEPHONY_SERVICE);
             try {
                 Class cls = Class.forName(telephony.getClass().getName());
                 Method m = cls.getDeclaredMethod("getITelephony");
@@ -92,46 +89,41 @@ public class CallBlocker extends BroadcastReceiver {
                 telephonyService = (ITelephony) m.invoke(telephony);
                 //telephonyService.silenceRinger();
                 telephonyService.endCall();
-                    String Inumber = b.getString("incoming_number");
-                    showNotification(c, Inumber);
-
-                Log.d("Caller (from bb)","numero: "+Inumber);
-                //Log.d("Colgar :",b.toString());
+                String incoming_number = b.getString(INCOMING_NUMBER);
+                Long current_time = getCurrentTime();
+                showNotification(ctx, incoming_number, current_time);
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
     }
 
+
+    public Long getCurrentTime(){
+        Calendar calendar = Calendar.getInstance();
+        Long current_time = calendar.getTime().getTime();
+        return current_time;
+    }
+
     /**
      * Show a notification while this service is running.
      */
-    private void showNotification(Context context, String number) {
-        // In this sample, we'll use the same text for the ticker and the expanded notification
-        //CharSequence text = getText(R.string.remote_service_started);
-        mNM = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+    private void showNotification(Context context, String number, Long curent_time) {
+        Intent intent = new Intent(context, MainActivity.class);
+        PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
-        // Set the icon, scrolling text and timestamp
         Notification notification = new Notification.Builder(context)
-                .setContentTitle("Bloqueamos una llamada peligrosa")
-                .setContentText("numero : "+number)
+                .setContentTitle(CONTENT_TITLE)
+                .setContentText(CONTENT_TEXT + number)
                 .setSmallIcon(R.drawable.ic_launcher)
-                .setWhen(0)
+                .setContentIntent(pIntent)
+                .setWhen(curent_time)
                 .getNotification();
-                //getNotification()
 
-        // The PendingIntent to launch our activity if the user selects this notification
-        /*PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, MainActivity.class), 0);*/
+        NotificationManager notificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        // Set the info for the views that show in the notification panel.
-        /*notification.setLatestEventInfo(this, getText(R.string.remote_service_label),
-                text, contentIntent);*/
-
-        // Send the notification.
-        // We use a string id because it is a unique number.  We use it later to cancel.
-        mNM.notify(R.string.remote_service_started, notification);
-        //startForeground(1234,notification);
+        notificationManager.notify(0, notification);
     }
 
 }
