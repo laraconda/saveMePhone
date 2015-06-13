@@ -39,8 +39,8 @@
             android:layout_height="60dp" />
 
     </LinearLayout>
-    <ListView
-        android:id="@android:id/list"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_blocked_contacts"
         android:layout_marginTop="10dp"
         android:layout_marginRight="14dp"
         android:layout_marginLeft="14dp"

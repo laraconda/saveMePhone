@@ -7,7 +7,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.example.chicharo.call_blocker.Models.PhoneModel;
+import com.example.chicharo.call_blocker.Models.contactModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ public class PhonesDataSource {
     private SQLiteDatabase database;
     private MySQLiteHelper dbHelper;
     private String[] allColumns = { MySQLiteHelper.COLUMN_ID,
-            MySQLiteHelper.COLUMN_NUMBER };
+            MySQLiteHelper.COLUMN_NAME, MySQLiteHelper.COLUMN_NUMBER };
 
     public PhonesDataSource(Context context) {
         dbHelper = new MySQLiteHelper(context);
@@ -32,8 +32,9 @@ public class PhonesDataSource {
         dbHelper.close();
     }
 
-    public PhoneModel createPhone(String number) {
+    public contactModel createBlockedContact(String number, String name) {
         ContentValues values = new ContentValues();
+        values.put(MySQLiteHelper.COLUMN_NAME, name);
         values.put(MySQLiteHelper.COLUMN_NUMBER, number);
         long insertId = database.insert(MySQLiteHelper.TABLE_PHONE, null,
                 values);
@@ -41,14 +42,13 @@ public class PhonesDataSource {
                 allColumns, MySQLiteHelper.COLUMN_ID + " = " + insertId, null,
                 null, null, null);
         cursor.moveToFirst();
-        PhoneModel newPhone = cursorToPhone(cursor);
+        contactModel newBlockedContact = cursorToContact(cursor);
         cursor.close();
-        return newPhone;
+        return newBlockedContact;
     }
 
-    public void deleteComment(PhoneModel phone) {
-        long id = phone.get_id();
-        System.out.println("Comment deleted with id: " + id);
+    public void deleteBlockedContact(contactModel contact) {
+        long id = contact.get_id();
         database.delete(MySQLiteHelper.TABLE_PHONE, MySQLiteHelper.COLUMN_ID
                 + " = " + id, null);
     }
@@ -58,13 +58,15 @@ public class PhonesDataSource {
     }
 
     public Boolean isInOwnBlackList(String number){
-        Cursor c = database.query(MySQLiteHelper.TABLE_PHONE, allColumns, MySQLiteHelper.COLUMN_NUMBER
+        Cursor cursor = database.query(MySQLiteHelper.TABLE_PHONE, allColumns, MySQLiteHelper.COLUMN_NUMBER
                 + " = " + number, null,null,null,null);
-        return c.getCount()!=0;
+        Boolean isInOwnBlacklist = cursor.getCount()!=0;
+        cursor.close();
+        return isInOwnBlacklist;
     }
 
-    public List<PhoneModel> getAllComments() {
-        List<PhoneModel> Lphones = new ArrayList<PhoneModel>();
+    public List<contactModel> getAllContacts() {
+        List<contactModel> contactList = new ArrayList<contactModel>();
 
         Cursor cursor = database.query(MySQLiteHelper.TABLE_PHONE,
                 allColumns, null, null, null, null, null);
@@ -72,20 +74,21 @@ public class PhonesDataSource {
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            PhoneModel phones = cursorToPhone(cursor);
-            Lphones.add(phones);
+            contactModel phones = cursorToContact(cursor);
+            contactList.add(phones);
             cursor.moveToNext();
         }
         // make sure to close the cursor
         cursor.close();
-        return Lphones;
+        return contactList;
     }
 
-    private PhoneModel cursorToPhone(Cursor cursor) {
-        PhoneModel pm = new PhoneModel();
-        pm.set_id(cursor.getLong(0));
-        pm.setNumber(cursor.getString(1));
-        return pm;
+    private contactModel cursorToContact(Cursor cursor) {
+        contactModel cm = new contactModel();
+        cm.set_id(cursor.getLong(0));
+        cm.setContactName(cursor.getString(1));
+        cm.setPhoneNumber(cursor.getString(2));
+        return cm;
     }
 
 }

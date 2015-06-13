@@ -9,6 +9,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
     public static final String TABLE_PHONE = "phone";
     public static final String COLUMN_ID = "_id";
+    public static final String COLUMN_NAME = "names";
     public static final String COLUMN_NUMBER = "numbers";
 
     private static final String DATABASE_NAME = "ownBlackList.db";
@@ -17,7 +18,8 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     // Database creation sql statement
     private static final String DATABASE_CREATE = "create table "
             + TABLE_PHONE + "(" + COLUMN_ID
-            + " integer primary key autoincrement, " + COLUMN_NUMBER
+            + " integer primary key autoincrement, " + COLUMN_NAME
+            + " string, " + COLUMN_NUMBER
             + " integer not null);";
 
     public MySQLiteHelper(Context context) {

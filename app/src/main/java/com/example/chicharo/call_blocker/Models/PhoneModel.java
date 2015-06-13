@@ -1,8 +1,5 @@
 package com.example.chicharo.call_blocker.Models;
 
-/**
- * Created by chicharo on 31/12/14.
- */
 public class PhoneModel {
     private long _id;
     private String number;
