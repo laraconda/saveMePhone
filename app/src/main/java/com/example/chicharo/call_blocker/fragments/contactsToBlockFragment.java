@@ -1,6 +1,7 @@
 package com.example.chicharo.call_blocker.fragments;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,7 +16,9 @@ import android.widget.AdapterView;
 import android.widget.Toast;
 
 import com.example.chicharo.call_blocker.R;
+import com.example.chicharo.call_blocker.activities.myBlackList;
 import com.example.chicharo.call_blocker.adapters.ContactsAdapter;
+import com.example.chicharo.call_blocker.dataBases.PhonesDataSource;
 import com.example.chicharo.call_blocker.models.contactModel;
 
 import java.util.ArrayList;
@@ -23,16 +26,7 @@ import java.util.List;
 
 public class contactsToBlockFragment extends Fragment implements ContactsAdapter.onItemClickListener{
     ContactsAdapter contactsToBlockAdapter;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
+    List<contactModel> contacts;
 
     @Nullable
     @Override
@@ -48,15 +42,16 @@ public class contactsToBlockFragment extends Fragment implements ContactsAdapter
     }
 
     public List<contactModel> getAllContacts() {
-        List<contactModel> allContacts = new ArrayList<contactModel>();
+        contacts = new ArrayList<contactModel>();
         Cursor cursor = getActivity().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
         while(cursor.moveToNext()){
             contactModel contactModel = ContactToOwnContactModel(cursor);
             if(contactModel != null){
-                allContacts.add(contactModel);
+                contacts.add(contactModel);
             }
         }
-        return allContacts;
+        cursor.close();
+        return contacts;
     }
 
     public contactModel ContactToOwnContactModel(Cursor cursor){
@@ -71,8 +66,19 @@ public class contactsToBlockFragment extends Fragment implements ContactsAdapter
         return contactModel;
     }
 
+    public void addContactToBlockedContacts(int position){
+        contactModel contact = contacts.get(position);
+        PhonesDataSource phonesDataSource = new PhonesDataSource(getActivity());
+        phonesDataSource.open();
+        phonesDataSource.createBlockedContact(contact.getPhoneNumber(), contact.getContactName());
+        phonesDataSource.close();
+    }
+
     @Override
     public void onItemClick(View v, int position) {
-        Toast.makeText(getActivity(), String.valueOf(position), Toast.LENGTH_SHORT).show();
+        addContactToBlockedContacts(position);
+        Intent startMyBlackList = new Intent(getActivity(), myBlackList.class);
+        startActivity(startMyBlackList);
+        getActivity().finish();
     }
 }
