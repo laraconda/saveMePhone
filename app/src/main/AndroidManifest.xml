@@ -14,7 +14,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".Activities.MainActivity"
+            android:name=".activities.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,17 +22,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <receiver android:name=".Listener.CallBlocker">
+        <receiver android:name=".listener.CallBlocker">
             <intent-filter android:priority="1000">
                 <action android:name="android.intent.action.PHONE_STATE"/>
             </intent-filter>
         </receiver>
-        <receiver android:name=".Listener.BootCompleted">
+        <receiver android:name=".listener.BootCompleted">
             <intent-filter android:priority="1000">
                 <action android:name="android.Intent.ACTION_BOOT_COMPLETED"/>
             </intent-filter>
             </receiver>
-        <activity android:name=".Activities.myBlackList"/>
+        <activity android:name=".activities.myBlackList"/>
+        <activity android:name=".activities.chooseContactsToBlock"/>
     </application>
 
 </manifest>

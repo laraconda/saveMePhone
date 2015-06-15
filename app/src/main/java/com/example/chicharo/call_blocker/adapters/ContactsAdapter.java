@@ -1,4 +1,4 @@
-package com.example.chicharo.call_blocker.Adapters;
+package com.example.chicharo.call_blocker.adapters;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -6,17 +6,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.chicharo.call_blocker.Models.contactModel;
+import com.example.chicharo.call_blocker.models.contactModel;
 import com.example.chicharo.call_blocker.R;
 
 import java.util.List;
 
 
-public class BlockedContactsAdapter extends RecyclerView.Adapter<BlockedContactsAdapter.ContactViewHolder> {
+public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ContactViewHolder> {
 
     private List<contactModel> blockedContactsList;
 
-    public BlockedContactsAdapter(List<contactModel> blockedContactsList){
+    public ContactsAdapter(List<contactModel> blockedContactsList){
         this.blockedContactsList = blockedContactsList;
     }
 

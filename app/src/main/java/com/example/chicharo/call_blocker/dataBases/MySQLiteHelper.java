@@ -1,4 +1,4 @@
-package com.example.chicharo.call_blocker.DataBases;
+package com.example.chicharo.call_blocker.dataBases;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

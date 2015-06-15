@@ -1,4 +1,4 @@
-package com.example.chicharo.call_blocker.Activities;
+package com.example.chicharo.call_blocker.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
-import android.widget.ToggleButton;
 
 import com.example.chicharo.call_blocker.R;
 

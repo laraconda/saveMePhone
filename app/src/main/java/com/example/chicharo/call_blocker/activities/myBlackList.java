@@ -1,8 +1,8 @@
-package com.example.chicharo.call_blocker.Activities;
+package com.example.chicharo.call_blocker.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -12,9 +12,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.chicharo.call_blocker.Adapters.BlockedContactsAdapter;
-import com.example.chicharo.call_blocker.DataBases.PhonesDataSource;
-import com.example.chicharo.call_blocker.Models.contactModel;
+import com.example.chicharo.call_blocker.adapters.ContactsAdapter;
+import com.example.chicharo.call_blocker.dataBases.PhonesDataSource;
+import com.example.chicharo.call_blocker.models.contactModel;
 import com.example.chicharo.call_blocker.R;
 import java.util.List;
 
@@ -22,7 +22,7 @@ public class myBlackList extends ActionBarActivity implements View.OnClickListen
     PhonesDataSource phonesDataSource;
     private static final String regexIsAValidPhoneNumber = "^[0-9]{8,12}$";
     private EditText editTextAddNewPhone;
-    private BlockedContactsAdapter blockedContactsAdapter;
+    private ContactsAdapter blockedContactsAdapter;
     List<contactModel> values;
     RecyclerView recyclerViewBlockedContacts;
 
@@ -35,6 +35,8 @@ public class myBlackList extends ActionBarActivity implements View.OnClickListen
         btnAddNewPhone.setOnClickListener(this);
         Button btnDeleletePhone = (Button)findViewById(R.id.btn_DeleteAll);
         btnDeleletePhone.setOnClickListener(this);
+        Button btnBlockContact = (Button)findViewById(R.id.btn_block_contact);
+        btnBlockContact.setOnClickListener(this);
         phonesDataSource = new PhonesDataSource(this);
         phonesDataSource.open();
         prepareRecyclerView();
@@ -46,7 +48,7 @@ public class myBlackList extends ActionBarActivity implements View.OnClickListen
         //recyclerViewBlockedContacts.setItemAnimator(new DefaultItemAnimator());
         values = phonesDataSource.getAllContacts();
         setEmptyRecycler();
-        blockedContactsAdapter = new BlockedContactsAdapter(values);
+        blockedContactsAdapter = new ContactsAdapter(values);
         recyclerViewBlockedContacts.setAdapter(blockedContactsAdapter);
         ItemTouchHelper swipeToDismiss = buildSwipeToDismiss();
         swipeToDismiss.attachToRecyclerView(recyclerViewBlockedContacts);
@@ -98,6 +100,9 @@ public class myBlackList extends ActionBarActivity implements View.OnClickListen
             blockedContactsAdapter.notifyItemRangeRemoved(0, values.size());
             values.clear();
             setEmptyRecycler();
+        } else if(v.getId() == R.id.btn_block_contact){
+            Intent blockContactActivity = new Intent(this, chooseContactsToBlock.class);
+            startActivity(blockContactActivity);
         }
     }
 

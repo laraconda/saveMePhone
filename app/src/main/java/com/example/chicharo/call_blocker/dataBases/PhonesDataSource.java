@@ -1,4 +1,4 @@
-package com.example.chicharo.call_blocker.DataBases;
+package com.example.chicharo.call_blocker.dataBases;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -7,7 +7,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.example.chicharo.call_blocker.Models.contactModel;
+import com.example.chicharo.call_blocker.models.contactModel;
 
 import java.util.ArrayList;
 import java.util.List;

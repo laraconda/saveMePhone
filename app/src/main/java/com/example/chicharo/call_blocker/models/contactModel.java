@@ -1,4 +1,4 @@
-package com.example.chicharo.call_blocker.Models;
+package com.example.chicharo.call_blocker.models;
 
 
 public class contactModel {

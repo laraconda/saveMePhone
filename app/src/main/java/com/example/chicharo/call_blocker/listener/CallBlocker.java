@@ -1,4 +1,4 @@
-package com.example.chicharo.call_blocker.Listener;
+package com.example.chicharo.call_blocker.listener;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -12,11 +12,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 
 import com.android.internal.telephony.ITelephony;
-import com.example.chicharo.call_blocker.Activities.MainActivity;
-import com.example.chicharo.call_blocker.DataBases.PhonesDataSource;
+import com.example.chicharo.call_blocker.activities.MainActivity;
+import com.example.chicharo.call_blocker.dataBases.PhonesDataSource;
 import com.example.chicharo.call_blocker.R;
 
 import java.lang.reflect.Method;
