@@ -1,9 +1,12 @@
 package com.example.chicharo.call_blocker.adapters;
 
+import android.renderscript.Sampler;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.TextView;
 
 import com.example.chicharo.call_blocker.models.contactModel;
@@ -15,6 +18,7 @@ import java.util.List;
 public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ContactViewHolder> {
 
     private List<contactModel> blockedContactsList;
+    onItemClickListener mItemClickListener;
 
     public ContactsAdapter(List<contactModel> blockedContactsList){
         this.blockedContactsList = blockedContactsList;
@@ -40,7 +44,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.Contac
         return blockedContactsList.size();
     }
 
-    public class ContactViewHolder extends RecyclerView.ViewHolder {
+    public class ContactViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         TextView contactName;
         TextView contactNumber;
 
@@ -48,7 +52,23 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.Contac
             super(itemView);
             contactName = (TextView)itemView.findViewById(R.id.blocked_contact_title);
             contactNumber = (TextView)itemView.findViewById(R.id.blocked_contact_number);
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v) {
+            if (mItemClickListener != null) {
+                mItemClickListener.onItemClick(v, getAdapterPosition());
+            }
+        }
+
     }
 
+    public interface onItemClickListener{
+        public void onItemClick(View v, int position);
+    }
+
+    public void SetOnItemClickListener(final onItemClickListener mItemClickListener) {
+        this.mItemClickListener = mItemClickListener;
+    }
 }

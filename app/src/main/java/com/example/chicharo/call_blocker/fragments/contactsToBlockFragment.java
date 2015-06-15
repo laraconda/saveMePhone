@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.provider.ContactsContract;
 import android.widget.AdapterView;
+import android.widget.Toast;
 
 import com.example.chicharo.call_blocker.R;
 import com.example.chicharo.call_blocker.adapters.ContactsAdapter;
@@ -20,7 +21,7 @@ import com.example.chicharo.call_blocker.models.contactModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class contactsToBlockFragment extends Fragment implements AdapterView.OnItemClickListener{
+public class contactsToBlockFragment extends Fragment implements ContactsAdapter.onItemClickListener{
     ContactsAdapter contactsToBlockAdapter;
 
     @Override
@@ -41,13 +42,14 @@ public class contactsToBlockFragment extends Fragment implements AdapterView.OnI
         RecyclerView recyclerView = (RecyclerView)view.findViewById(R.id.recycler_blocked_contacts);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         contactsToBlockAdapter = new ContactsAdapter(getAllContacts());
+        contactsToBlockAdapter.SetOnItemClickListener(this);
         recyclerView.setAdapter(contactsToBlockAdapter);
         return view;
     }
 
     public List<contactModel> getAllContacts() {
         List<contactModel> allContacts = new ArrayList<contactModel>();
-        Cursor cursor = getActivity().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,null,null, null);
+        Cursor cursor = getActivity().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
         while(cursor.moveToNext()){
             contactModel contactModel = ContactToOwnContactModel(cursor);
             if(contactModel != null){
@@ -69,9 +71,8 @@ public class contactsToBlockFragment extends Fragment implements AdapterView.OnI
         return contactModel;
     }
 
-
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+    public void onItemClick(View v, int position) {
+        Toast.makeText(getActivity(), String.valueOf(position), Toast.LENGTH_SHORT).show();
     }
 }
