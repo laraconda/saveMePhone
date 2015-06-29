@@ -4,16 +4,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.support.design.widget.FloatingActionButton;
 
 import com.example.chicharo.call_blocker.R;
 
-public class MainActivity extends ActionBarActivity implements View.OnClickListener,
+public class MainActivity extends AppCompatActivity implements View.OnClickListener,
         CompoundButton.OnCheckedChangeListener {
 
     private static final String SETTINGS_SHARED_PREFERENCES_NAME = "Settings";
@@ -27,6 +28,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         Button btn_myBlackList = (Button)findViewById(R.id.btn_myBlackList);
         Switch switch_hidden_numbers = (Switch)findViewById(R.id.switch_hidden_numbers);
         switch_hidden_numbers.setChecked(acceptCallFromHiddenNumbers());
+        FloatingActionButton fab_block = (FloatingActionButton)findViewById(R.id.fab_block_numbers);
+        fab_block.setOnClickListener(this);
         btn_myBlackList.setOnClickListener(this);
         switch_hidden_numbers.setOnCheckedChangeListener(this);
     }
@@ -35,6 +38,9 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     public void onClick(View v) {
         if (v.getId() == R.id.btn_myBlackList){
             Intent i = new Intent(getApplicationContext(),myBlackList.class);
+            startActivity(i);
+        } else if(v.getId() == R.id.fab_block_numbers){
+            Intent i = new Intent(getApplicationContext(),chooseContactsToBlock.class);
             startActivity(i);
         }
     }
