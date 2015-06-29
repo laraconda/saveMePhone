@@ -12,7 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.chicharo.call_blocker.adapters.ContactsAdapter;
+import com.example.chicharo.call_blocker.adapters.ContactAdapter;
 import com.example.chicharo.call_blocker.dataBases.PhonesDataSource;
 import com.example.chicharo.call_blocker.models.contactModel;
 import com.example.chicharo.call_blocker.R;
@@ -22,7 +22,7 @@ public class myBlackList extends ActionBarActivity implements View.OnClickListen
     PhonesDataSource phonesDataSource;
     private static final String regexIsAValidPhoneNumber = "^[0-9]{8,12}$";
     private EditText editTextAddNewPhone;
-    private ContactsAdapter blockedContactsAdapter;
+    private ContactAdapter blockedContactAdapter;
     List<contactModel> values;
     RecyclerView recyclerViewBlockedContacts;
 
@@ -48,8 +48,8 @@ public class myBlackList extends ActionBarActivity implements View.OnClickListen
         //recyclerViewBlockedContacts.setItemAnimator(new DefaultItemAnimator());
         values = phonesDataSource.getAllContacts();
         setEmptyRecycler();
-        blockedContactsAdapter = new ContactsAdapter(values);
-        recyclerViewBlockedContacts.setAdapter(blockedContactsAdapter);
+        blockedContactAdapter = new ContactAdapter(values);
+        recyclerViewBlockedContacts.setAdapter(blockedContactAdapter);
         ItemTouchHelper swipeToDismiss = buildSwipeToDismiss();
         swipeToDismiss.attachToRecyclerView(recyclerViewBlockedContacts);
     }
@@ -76,7 +76,7 @@ public class myBlackList extends ActionBarActivity implements View.OnClickListen
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 phonesDataSource.deleteBlockedContact(values.get(viewHolder.getAdapterPosition()));
                 values.remove(viewHolder.getAdapterPosition());
-                blockedContactsAdapter.notifyItemRemoved(viewHolder.getAdapterPosition());
+                blockedContactAdapter.notifyItemRemoved(viewHolder.getAdapterPosition());
                 setEmptyRecycler();
             }
         });
@@ -89,7 +89,7 @@ public class myBlackList extends ActionBarActivity implements View.OnClickListen
             if(editTextAddNewPhone.getText().toString().matches(regexIsAValidPhoneNumber)) {
                 contactModel contactModel = phonesDataSource.createBlockedContact("Pedro", editTextAddNewPhone.getText().toString());
                 values.add(contactModel);
-                blockedContactsAdapter.notifyItemInserted(values.indexOf(contactModel));
+                blockedContactAdapter.notifyItemInserted(values.indexOf(contactModel));
                 setEmptyRecycler();
             } else {
                 Toast.makeText(getApplicationContext(), "This is not a valid phone number",
@@ -97,7 +97,7 @@ public class myBlackList extends ActionBarActivity implements View.OnClickListen
             }
         } else if(v.getId() == R.id.btn_DeleteAll){
             phonesDataSource.deleteAll();
-            blockedContactsAdapter.notifyItemRangeRemoved(0, values.size());
+            blockedContactAdapter.notifyItemRangeRemoved(0, values.size());
             values.clear();
             setEmptyRecycler();
         } else if(v.getId() == R.id.btn_block_contact){

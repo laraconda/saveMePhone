@@ -1,12 +1,9 @@
 package com.example.chicharo.call_blocker.adapters;
 
-import android.renderscript.Sampler;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.TextView;
 
 import com.example.chicharo.call_blocker.models.contactModel;
@@ -15,12 +12,12 @@ import com.example.chicharo.call_blocker.R;
 import java.util.List;
 
 
-public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.ContactViewHolder> {
+public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactViewHolder> {
 
     private List<contactModel> blockedContactsList;
     onItemClickListener mItemClickListener;
 
-    public ContactsAdapter(List<contactModel> blockedContactsList){
+    public ContactAdapter(List<contactModel> blockedContactsList){
         this.blockedContactsList = blockedContactsList;
     }
 
@@ -28,7 +25,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.Contac
     public ContactViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.
                 from(parent.getContext()).
-                inflate(R.layout.blocked_contacts_card, parent, false);
+                inflate(R.layout.bivalue_card, parent, false);
         return new ContactViewHolder(itemView);
     }
 
