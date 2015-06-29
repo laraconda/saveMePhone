@@ -1,7 +1,7 @@
 package com.example.chicharo.call_blocker.fragments;
 
 
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -27,12 +27,13 @@ public class recentsCallsToBlockFragment extends Fragment implements ContactAdap
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View view = inflater.inflate(R.layout.recycler_view_fragment, container);
-        RecyclerView recyclerView = (RecyclerView)view.findViewById(R.id.recycler_blocked_contacts);
+        ViewGroup rootView = (ViewGroup) inflater.inflate(
+                R.layout.fragment_choose_recent_calls, container, false);
+        RecyclerView recyclerView = (RecyclerView)rootView.findViewById(R.id.recycler_blocked_contacts);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         RecentCallAdapter biValueAdapter = new RecentCallAdapter(getRecentCalls(20));
         recyclerView.setAdapter(biValueAdapter);
-        return view;
+        return rootView;
     }
 
     private List<RecentCallModel> getRecentCalls(int limit){

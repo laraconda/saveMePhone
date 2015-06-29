@@ -1,6 +1,6 @@
 package com.example.chicharo.call_blocker.fragments;
 
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -29,13 +29,14 @@ public class contactsToBlockFragment extends Fragment implements ContactAdapter.
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View view = inflater.inflate(R.layout.recycler_view_fragment, container, false);
-        RecyclerView recyclerView = (RecyclerView)view.findViewById(R.id.recycler_blocked_contacts);
+        ViewGroup rootView = (ViewGroup) inflater.inflate(
+                R.layout.fragment_choose_recent_calls, container, false);
+        RecyclerView recyclerView = (RecyclerView)rootView.findViewById(R.id.recycler_blocked_contacts);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         contactsToBlockAdapter = new ContactAdapter(getAllContacts());
         contactsToBlockAdapter.SetOnItemClickListener(this);
         recyclerView.setAdapter(contactsToBlockAdapter);
-        return view;
+        return rootView;
     }
 
     public List<contactModel> getAllContacts() {
