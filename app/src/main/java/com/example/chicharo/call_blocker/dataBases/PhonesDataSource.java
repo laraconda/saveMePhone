@@ -30,10 +30,12 @@ public class PhonesDataSource {
     public void open() throws SQLException {
         database = dbHelper.getWritableDatabase();
         contactsPhonesDataSource = new ContactsPhonesDataSource(context);
+        contactsPhonesDataSource.open();
     }
 
     public void close() {
         dbHelper.close();
+        contactsPhonesDataSource.close();
     }
 
     public PhoneModel blockNumber(String number) {
