@@ -65,7 +65,7 @@ public class recentsCallsToBlockFragment extends Fragment implements ContactAdap
 
     @Override
     public void onItemClick(View v, int position) {
-        //storeContact(contactModel, numbers);
+        //storeContact(ContactModel, numbers);
     }
 
 

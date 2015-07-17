@@ -13,17 +13,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.chicharo.call_blocker.adapters.ContactAdapter;
-import com.example.chicharo.call_blocker.dataBases.PhonesDataSource;
-import com.example.chicharo.call_blocker.models.contactModel;
+import com.example.chicharo.call_blocker.dataBases.ContactsDataSource;
+import com.example.chicharo.call_blocker.models.ContactModel;
 import com.example.chicharo.call_blocker.R;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class myBlackList extends ActionBarActivity implements View.OnClickListener{
-    PhonesDataSource phonesDataSource;
+    ContactsDataSource contactsDataSource;
     private static final String regexIsAValidPhoneNumber = "^[0-9]{8,12}$";
     private EditText editTextAddNewPhone;
     private ContactAdapter blockedContactAdapter;
-    List<contactModel> values;
+    List<ContactModel> values;
     RecyclerView recyclerViewBlockedContacts;
 
     @Override
@@ -37,8 +39,8 @@ public class myBlackList extends ActionBarActivity implements View.OnClickListen
         btnDeleletePhone.setOnClickListener(this);
         Button btnBlockContact = (Button)findViewById(R.id.btn_block_contact);
         btnBlockContact.setOnClickListener(this);
-        phonesDataSource = new PhonesDataSource(this);
-        phonesDataSource.open();
+        contactsDataSource = new ContactsDataSource(this);
+        contactsDataSource.open();
         prepareRecyclerView();
     }
 
@@ -46,7 +48,7 @@ public class myBlackList extends ActionBarActivity implements View.OnClickListen
         recyclerViewBlockedContacts = (RecyclerView)findViewById(R.id.recycler_blocked_contacts);
         recyclerViewBlockedContacts.setLayoutManager(new LinearLayoutManager(this));
         //recyclerViewBlockedContacts.setItemAnimator(new DefaultItemAnimator());
-        values = phonesDataSource.getAllContacts();
+        values = contactsDataSource.getAllContacts();
         setEmptyRecycler();
         blockedContactAdapter = new ContactAdapter(values);
         recyclerViewBlockedContacts.setAdapter(blockedContactAdapter);
@@ -74,7 +76,7 @@ public class myBlackList extends ActionBarActivity implements View.OnClickListen
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                phonesDataSource.deleteBlockedContact(values.get(viewHolder.getAdapterPosition()));
+                contactsDataSource.deleteBlockedContact(values.get(viewHolder.getAdapterPosition()).get_id());
                 values.remove(viewHolder.getAdapterPosition());
                 blockedContactAdapter.notifyItemRemoved(viewHolder.getAdapterPosition());
                 setEmptyRecycler();
@@ -87,16 +89,18 @@ public class myBlackList extends ActionBarActivity implements View.OnClickListen
     public void onClick(View v) {
         if(v.getId() == R.id.btn_newPhone) {
             if(editTextAddNewPhone.getText().toString().matches(regexIsAValidPhoneNumber)) {
-                contactModel contactModel = phonesDataSource.createBlockedContact("Pedro", editTextAddNewPhone.getText().toString());
-                values.add(contactModel);
-                blockedContactAdapter.notifyItemInserted(values.indexOf(contactModel));
+                List<String> numbers = new ArrayList<>();
+                numbers.add(editTextAddNewPhone.getText().toString());
+                ContactModel ContactModel = contactsDataSource.addBlockedContact("Pedro", numbers);
+                values.add(ContactModel);
+                blockedContactAdapter.notifyItemInserted(values.indexOf(ContactModel));
                 setEmptyRecycler();
             } else {
                 Toast.makeText(getApplicationContext(), "This is not a valid phone number",
                         Toast.LENGTH_SHORT).show();
             }
         } else if(v.getId() == R.id.btn_DeleteAll){
-            phonesDataSource.deleteAll();
+            contactsDataSource.deleteAll();
             blockedContactAdapter.notifyItemRangeRemoved(0, values.size());
             values.clear();
             setEmptyRecycler();
@@ -108,13 +112,13 @@ public class myBlackList extends ActionBarActivity implements View.OnClickListen
 
     @Override
     protected void onResume() {
-        phonesDataSource.open();
+        contactsDataSource.open();
         super.onResume();
     }
 
     @Override
     protected void onPause() {
-        phonesDataSource.close();
+        contactsDataSource.close();
         super.onPause();
     }
 }

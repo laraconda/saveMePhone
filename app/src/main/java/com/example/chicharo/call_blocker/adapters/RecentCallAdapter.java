@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import com.example.chicharo.call_blocker.R;
 import com.example.chicharo.call_blocker.models.RecentCallModel;
-import com.example.chicharo.call_blocker.models.contactModel;
 
 import java.util.List;
 
