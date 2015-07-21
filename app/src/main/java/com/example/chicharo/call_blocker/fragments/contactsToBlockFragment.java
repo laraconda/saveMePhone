@@ -15,15 +15,16 @@ import android.provider.ContactsContract;
 import com.example.chicharo.call_blocker.R;
 import com.example.chicharo.call_blocker.activities.myBlackList;
 import com.example.chicharo.call_blocker.adapters.ContactAdapter;
+import com.example.chicharo.call_blocker.dataBases.ContactsDataSource;
 import com.example.chicharo.call_blocker.dataBases.PhonesDataSource;
-import com.example.chicharo.call_blocker.models.contactModel;
+import com.example.chicharo.call_blocker.models.ContactModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class contactsToBlockFragment extends Fragment implements ContactAdapter.onItemClickListener{
     ContactAdapter contactsToBlockAdapter;
-    List<contactModel> contacts;
+    List<ContactModel> contacts;
 
     @Nullable
     @Override
@@ -39,37 +40,39 @@ public class contactsToBlockFragment extends Fragment implements ContactAdapter.
         return rootView;
     }
 
-    public List<contactModel> getAllContacts() {
-        contacts = new ArrayList<contactModel>();
+    public List<ContactModel> getAllContacts() {
+        contacts = new ArrayList<ContactModel>();
         Cursor cursor = getActivity().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
         while(cursor.moveToNext()){
-            contactModel contactModel = ContactToOwnContactModel(cursor);
-            if(contactModel != null){
-                contacts.add(contactModel);
+            ContactModel ContactModel = ContactToOwnContactModel(cursor);
+            if(ContactModel != null){
+                contacts.add(ContactModel);
             }
         }
         cursor.close();
         return contacts;
     }
 
-    public contactModel ContactToOwnContactModel(Cursor cursor){
-        contactModel contactModel = new contactModel();
+    public ContactModel ContactToOwnContactModel(Cursor cursor){
+        ContactModel ContactModel = new ContactModel();
         int hasPhoneNumber = cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER));
         if (hasPhoneNumber == 1) {
-            contactModel.setContactName(cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)));
-            contactModel.setPhoneNumber(cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
+            ContactModel.setContactName(cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)));
+            ContactModel.setPhoneNumber(cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
         } else {
             return null;
         }
-        return contactModel;
+        return ContactModel;
     }
 
     public void addContactToBlockedContacts(int position){
-        contactModel contact = contacts.get(position);
-        PhonesDataSource phonesDataSource = new PhonesDataSource(getActivity());
-        phonesDataSource.open();
-        phonesDataSource.createBlockedContact(contact.getPhoneNumber(), contact.getContactName());
-        phonesDataSource.close();
+        ContactModel contact = contacts.get(position);
+        List<String> numbers = new ArrayList<>();
+        numbers.add(contact.getPhoneNumber());
+        ContactsDataSource contactsDataSource = new ContactsDataSource(getActivity());
+        contactsDataSource.open();
+        contactsDataSource.addBlockedContact(contact.getContactName(), numbers);
+        contactsDataSource.close();
     }
 
     @Override

@@ -7,7 +7,8 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.example.chicharo.call_blocker.models.contactModel;
+import com.example.chicharo.call_blocker.models.ContactModel;
+import com.example.chicharo.call_blocker.models.PhoneModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,78 +18,82 @@ public class PhonesDataSource {
     // Database fields
     private SQLiteDatabase database;
     private MySQLiteHelper dbHelper;
-    private String[] allColumns = { MySQLiteHelper.COLUMN_ID,
-            MySQLiteHelper.COLUMN_NAME, MySQLiteHelper.COLUMN_NUMBER };
+    private ContactsPhonesDataSource contactsPhonesDataSource;
+    private String[] allColumns = { MySQLiteHelper.COLUMN_ID, MySQLiteHelper.COLUMN_NUMBER };
+    private Context context;
 
     public PhonesDataSource(Context context) {
+        this.context = context;
         dbHelper = new MySQLiteHelper(context);
     }
 
     public void open() throws SQLException {
         database = dbHelper.getWritableDatabase();
+        contactsPhonesDataSource = new ContactsPhonesDataSource(context);
+        contactsPhonesDataSource.open();
     }
 
     public void close() {
         dbHelper.close();
+        contactsPhonesDataSource.close();
     }
 
-    public contactModel createBlockedContact(String number, String name) {
+    public PhoneModel blockNumber(String number) {
         ContentValues values = new ContentValues();
-        values.put(MySQLiteHelper.COLUMN_NAME, name);
         values.put(MySQLiteHelper.COLUMN_NUMBER, number);
-        long insertId = database.insert(MySQLiteHelper.TABLE_PHONE, null,
+        long insertId = database.insert(MySQLiteHelper.TABLE_NUMBERS, null,
                 values);
-        Cursor cursor = database.query(MySQLiteHelper.TABLE_PHONE,
-                allColumns, MySQLiteHelper.COLUMN_ID + " = " + insertId, null,
+        return getPhone(insertId);
+    }
+
+    public void deletePhonesOfContact(long contactId){
+        List<Long> phonesToDelete = contactsPhonesDataSource.phonesOfContact(contactId);
+        for (int i=0; i<phonesToDelete.size(); i++){
+            removeBlockedNumber(phonesToDelete.get(i));
+        }
+    }
+
+    public PhoneModel getPhone(long id){
+        Cursor cursor = database.query(MySQLiteHelper.TABLE_NUMBERS,
+                allColumns, MySQLiteHelper.COLUMN_ID + " = " + id, null,
                 null, null, null);
         cursor.moveToFirst();
-        contactModel newBlockedContact = cursorToContact(cursor);
+        PhoneModel justBlockedNumber = cursorToPhone(cursor);
         cursor.close();
-        return newBlockedContact;
+        return justBlockedNumber;
     }
 
-    public void deleteBlockedContact(contactModel contact) {
-        long id = contact.get_id();
-        database.delete(MySQLiteHelper.TABLE_PHONE, MySQLiteHelper.COLUMN_ID
+
+    public void deleteAllNumbersWithContact() {
+        List<Long> phonesToDelete = contactsPhonesDataSource.getAllPhones();
+        for (int i = 0; i < phonesToDelete.size(); i++){
+            removeBlockedNumber(phonesToDelete.get(i));
+        }
+    }
+
+    public void removeBlockedNumber(long id) {
+        database.delete(MySQLiteHelper.TABLE_NUMBERS, MySQLiteHelper.COLUMN_ID
                 + " = " + id, null);
     }
 
     public void deleteAll(){
-        database.delete(MySQLiteHelper.TABLE_PHONE, MySQLiteHelper.COLUMN_ID, null);
+        database.delete(MySQLiteHelper.TABLE_NUMBERS, MySQLiteHelper.COLUMN_ID, null);
     }
 
     public Boolean isInOwnBlackList(String number){
-        Cursor cursor = database.query(MySQLiteHelper.TABLE_PHONE, allColumns, MySQLiteHelper.COLUMN_NUMBER
+        Cursor cursor = database.query(MySQLiteHelper.TABLE_NUMBERS, allColumns, MySQLiteHelper.COLUMN_NUMBER
                 + " = " + number, null,null,null,null);
         Boolean isInOwnBlacklist = cursor.getCount()!=0;
         cursor.close();
         return isInOwnBlacklist;
     }
 
-    public List<contactModel> getAllContacts() {
-        List<contactModel> contactList = new ArrayList<contactModel>();
 
-        Cursor cursor = database.query(MySQLiteHelper.TABLE_PHONE,
-                allColumns, null, null, null, null, null);
-        Log.d("Database","Size :"+cursor.getCount());
-
-        cursor.moveToFirst();
-        while (!cursor.isAfterLast()) {
-            contactModel phones = cursorToContact(cursor);
-            contactList.add(phones);
-            cursor.moveToNext();
-        }
-        // make sure to close the cursor
-        cursor.close();
-        return contactList;
-    }
-
-    private contactModel cursorToContact(Cursor cursor) {
-        contactModel cm = new contactModel();
-        cm.set_id(cursor.getLong(0));
-        cm.setContactName(cursor.getString(1));
-        cm.setPhoneNumber(cursor.getString(2));
-        return cm;
+    private PhoneModel cursorToPhone(Cursor cursor) {
+        PhoneModel pm = new PhoneModel();
+        pm.set_id(cursor.getLong(0));
+        pm.setNumber(cursor.getString(1));
+        return pm;
     }
 
 }

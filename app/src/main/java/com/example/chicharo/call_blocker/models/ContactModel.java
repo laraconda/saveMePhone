@@ -1,7 +1,7 @@
 package com.example.chicharo.call_blocker.models;
 
 
-public class contactModel {
+public class ContactModel {
 
     private long _id;
     private String contactName;

@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.chicharo.call_blocker.models.contactModel;
+import com.example.chicharo.call_blocker.models.ContactModel;
 import com.example.chicharo.call_blocker.R;
 
 import java.util.List;
@@ -14,10 +14,10 @@ import java.util.List;
 
 public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactViewHolder> {
 
-    private List<contactModel> blockedContactsList;
+    private List<ContactModel> blockedContactsList;
     onItemClickListener mItemClickListener;
 
-    public ContactAdapter(List<contactModel> blockedContactsList){
+    public ContactAdapter(List<ContactModel> blockedContactsList){
         this.blockedContactsList = blockedContactsList;
     }
 
@@ -31,7 +31,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
 
     @Override
     public void onBindViewHolder(ContactViewHolder holder, int position) {
-        contactModel contactmodel = blockedContactsList.get(position);
+        ContactModel contactmodel = blockedContactsList.get(position);
         holder.contactName.setText(contactmodel.getContactName());
         holder.contactNumber.setText(contactmodel.getPhoneNumber());
     }
