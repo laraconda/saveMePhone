@@ -9,27 +9,43 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 
 import com.example.chicharo.call_blocker.R;
 import com.example.chicharo.call_blocker.fragments.contactsToBlockFragment;
 import com.example.chicharo.call_blocker.fragments.recentsCallsToBlockFragment;
 
-public class chooseContactsToBlock extends FragmentActivity {
-
-    private ViewPager mPager;
-    private android.support.v4.app.FragmentPagerAdapter mPagerAdapter;
+public class chooseContactsToBlock extends FragmentActivity implements TabLayout.OnTabSelectedListener {
+    ViewPager mPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_block_number);
-        TabLayout tabLayout = (TabLayout)findViewById(R.id.sliding_tabs);
         mPager = (ViewPager)findViewById(R.id.pager);
-        mPagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
+        TabLayout tabLayout = (TabLayout)findViewById(R.id.sliding_tabs);
+        tabLayout.setOnTabSelectedListener(this);
+        FragmentPagerAdapter mPagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(mPagerAdapter);
         tabLayout.setTabsFromPagerAdapter(mPagerAdapter);
         mPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
     }
+
+    @Override
+    public void onTabSelected(TabLayout.Tab tab) {
+        mPager.setCurrentItem(tab.getPosition());
+    }
+
+    @Override
+    public void onTabUnselected(TabLayout.Tab tab) {
+
+    }
+
+    @Override
+    public void onTabReselected(TabLayout.Tab tab) {
+
+    }
+
 
     public class MyPagerAdapter extends FragmentPagerAdapter {
         public MyPagerAdapter(FragmentManager fm) {
