@@ -7,8 +7,17 @@ import java.util.List;
 public class ContactModel {
 
     private long _id;
+    private String systemId;
     private String contactName;
     private List<String> phoneNumbers = new ArrayList<>();
+
+    public String getSystemId() {
+        return systemId;
+    }
+
+    public void setSystemId(String systemId) {
+        this.systemId = systemId;
+    }
 
     public String getContactName() {
         return contactName;

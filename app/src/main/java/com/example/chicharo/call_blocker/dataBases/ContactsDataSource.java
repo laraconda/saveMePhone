@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.example.chicharo.call_blocker.models.ContactModel;
 
@@ -15,7 +16,7 @@ public class ContactsDataSource {
     // Database fields
     private SQLiteDatabase database;
     private MySQLiteHelper dbHelper;
-    private String[] allContactColumns = { MySQLiteHelper.COLUMN_ID, MySQLiteHelper.COLUMN_NAME };
+    private String[] allContactColumns = { MySQLiteHelper.COLUMN_ID, MySQLiteHelper.COLUMN_NAME, MySQLiteHelper.COLUMN_SYSTEM_ID };
     private PhonesDataSource phonesDataSource;
     private ContactsPhonesDataSource contactsPhonesDataSource;
     private Context context;
@@ -39,14 +40,15 @@ public class ContactsDataSource {
         contactsPhonesDataSource.close();
     }
 
-    public ContactModel addBlockedContact(String name, List<String> numbers) {
+    public ContactModel addBlockedContact(ContactModel contactModel) {
         ContentValues values = new ContentValues();
-        values.put(MySQLiteHelper.COLUMN_NAME, name);
+        values.put(MySQLiteHelper.COLUMN_NAME, contactModel.getContactName());
+        values.put(MySQLiteHelper.COLUMN_SYSTEM_ID, contactModel.getSystemId());
         long contactId = database.insert(MySQLiteHelper.TABLE_CONTACTS, null,
                 values);
         values.clear();
-        for(int i=0; i<numbers.size(); i++){
-            long phoneId = phonesDataSource.blockNumber(numbers.get(i)).get_id();
+        for(int i=0; i<contactModel.getPhoneNumbers().size(); i++){
+            long phoneId = phonesDataSource.blockNumber(contactModel.getPhoneNumbers().get(i)).get_id();
             contactsPhonesDataSource.createContactPhone(contactId, phoneId);
         }
         Cursor cursor = database.query(MySQLiteHelper.TABLE_CONTACTS,
@@ -87,10 +89,24 @@ public class ContactsDataSource {
         return contactList;
     }
 
+
+    public boolean isContactAlreadyBlocked(ContactModel contact){
+        String system_id = contact.getSystemId();
+        String[] system_id_array = {MySQLiteHelper.COLUMN_SYSTEM_ID};
+        Cursor system_id_cursor = database.query(MySQLiteHelper.TABLE_CONTACTS, system_id_array, MySQLiteHelper.COLUMN_SYSTEM_ID
+            + " = " + system_id, null, null, null, null);
+        if (system_id_cursor.moveToNext()){
+            Log.d("already","Ya tienes bloqueado a este contacto");
+            return true;
+        }
+        return false;
+    }
+
     public ContactModel cursorToContact(Cursor cursor){
         ContactModel contactModel = new ContactModel();
         contactModel.setContactName(cursor.getString(cursor.getColumnIndex(MySQLiteHelper.COLUMN_NAME)));
         contactModel.set_id(cursor.getLong(cursor.getColumnIndex(MySQLiteHelper.COLUMN_ID)));
+        contactModel.setSystemId(cursor.getString(cursor.getColumnIndex(MySQLiteHelper.COLUMN_SYSTEM_ID)));
         return contactModel;
     }
 

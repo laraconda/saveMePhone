@@ -13,6 +13,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
     public static final String TABLE_CONTACTS = "contacts";
     public static final String COLUMN_NAME = "name";
+    public static final String COLUMN_SYSTEM_ID = "system_id";
 
     public static final String TABLE_CONTACTS_NUMBERS = "contacts_numbers";
     public static final String COLUMN_PHONE_ID = "phone_id";
@@ -29,8 +30,8 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
     private static final String CREATE_TABLE_CONTACTS = "create table "
             + TABLE_CONTACTS + "(" + COLUMN_ID
-            + " integer primary key autoincrement, " + COLUMN_NAME
-            + " string not null);";
+            + " integer primary key autoincrement, " + COLUMN_SYSTEM_ID
+            + " string, " + COLUMN_NAME + " string not null);";
 
     private static final String CREATE_TABLE_CONTACTS_NUMBERS = "create table "
             + TABLE_CONTACTS_NUMBERS + "(" + COLUMN_PHONE_ID

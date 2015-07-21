@@ -90,12 +90,7 @@ public class myBlackList extends ActionBarActivity implements View.OnClickListen
     public void onClick(View v) {
         if(v.getId() == R.id.btn_newPhone) {
             if(editTextAddNewPhone.getText().toString().matches(regexIsAValidPhoneNumber)) {
-                List<String> numbers = new ArrayList<>();
-                numbers.add(editTextAddNewPhone.getText().toString());
-                ContactModel ContactModel = contactsDataSource.addBlockedContact("Pedro", numbers);
-                values.add(ContactModel);
-                blockedContactAdapter.notifyItemInserted(values.indexOf(ContactModel));
-                setEmptyRecycler();
+                //setEmptyRecycler();
             } else {
                 Toast.makeText(getApplicationContext(), "This is not a valid phone number",
                         Toast.LENGTH_SHORT).show();

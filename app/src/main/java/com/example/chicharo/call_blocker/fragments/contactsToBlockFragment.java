@@ -7,11 +7,11 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.provider.ContactsContract;
+import android.widget.Toast;
 
 import com.example.chicharo.call_blocker.R;
 import com.example.chicharo.call_blocker.activities.myBlackList;
@@ -60,6 +60,7 @@ public class contactsToBlockFragment extends Fragment implements ContactAdapter.
         int hasPhoneNumber = cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER));
         if (hasPhoneNumber == 1) {
             String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+            ContactModel.setSystemId(id);
             Cursor pCur = getActivity().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
                     ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = ?",new String[]{ id }, null);
             while (pCur.moveToNext())
@@ -76,19 +77,24 @@ public class contactsToBlockFragment extends Fragment implements ContactAdapter.
     }
 
     public void addContactToBlockedContacts(ContactModel contact){
-        List<String> numbers = new ArrayList<>();
-        numbers.addAll(contact.getPhoneNumbers());
         ContactsDataSource contactsDataSource = new ContactsDataSource(getActivity());
         contactsDataSource.open();
-        contactsDataSource.addBlockedContact(contact.getContactName(), numbers);
+        contactsDataSource.addBlockedContact(contact);
         contactsDataSource.close();
     }
 
     @Override
     public void onItemClick(View v, int position) {
-        addContactToBlockedContacts(contacts.get(position));
-        Intent startMyBlackList = new Intent(getActivity(), myBlackList.class);
-        startActivity(startMyBlackList);
-        getActivity().finish();
+        ContactsDataSource contactsDataSource = new ContactsDataSource(getActivity());
+        contactsDataSource.open();
+        if (contactsDataSource.isContactAlreadyBlocked(contacts.get(position))){
+            Toast.makeText(getActivity(), "Ya tienes bloqueado a este contacto",Toast.LENGTH_LONG).show();
+        } else {
+            addContactToBlockedContacts(contacts.get(position));
+            Intent startMyBlackList = new Intent(getActivity(), myBlackList.class);
+            startActivity(startMyBlackList);
+            getActivity().finish();
+        }
+        contactsDataSource.close();
     }
 }

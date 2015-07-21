@@ -121,11 +121,9 @@ public class recentsCallsToBlockFragment extends Fragment implements RecentCallA
     }
 
     public void addContactToBlockedContacts(ContactModel contact) {
-        List<String> numbers = new ArrayList<>();
-        numbers.addAll(contact.getPhoneNumbers());
         ContactsDataSource contactsDataSource = new ContactsDataSource(getActivity());
         contactsDataSource.open();
-        contactsDataSource.addBlockedContact(contact.getContactName(), numbers);
+        contactsDataSource.addBlockedContact(contact);
         contactsDataSource.close();
     }
 
