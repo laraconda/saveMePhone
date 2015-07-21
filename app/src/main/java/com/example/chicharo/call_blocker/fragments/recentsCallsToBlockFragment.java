@@ -1,6 +1,8 @@
 package com.example.chicharo.call_blocker.fragments;
 
 
+import android.content.Intent;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.database.Cursor;
 import android.net.Uri;
@@ -9,20 +11,29 @@ import android.provider.CallLog;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.chicharo.call_blocker.R;
+import com.example.chicharo.call_blocker.activities.myBlackList;
 import com.example.chicharo.call_blocker.adapters.ContactAdapter;
 import com.example.chicharo.call_blocker.adapters.RecentCallAdapter;
+import com.example.chicharo.call_blocker.dataBases.ContactsDataSource;
+import com.example.chicharo.call_blocker.dataBases.PhonesDataSource;
+import com.example.chicharo.call_blocker.models.ContactModel;
+import com.example.chicharo.call_blocker.models.PhoneModel;
 import com.example.chicharo.call_blocker.models.RecentCallModel;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
 public class recentsCallsToBlockFragment extends Fragment implements ContactAdapter.onItemClickListener{
+
+    List<RecentCallModel> recentCallModelList;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -37,7 +48,7 @@ public class recentsCallsToBlockFragment extends Fragment implements ContactAdap
     }
 
     private List<RecentCallModel> getRecentCalls(int limit){
-        List<RecentCallModel> recentCallModelList = new ArrayList<>(limit);
+        recentCallModelList = new ArrayList<>(limit);
         Uri queryUri = android.provider.CallLog.Calls.CONTENT_URI;
         String[] fields = new String[]{
                 CallLog.Calls.NUMBER,
@@ -54,18 +65,40 @@ public class recentsCallsToBlockFragment extends Fragment implements ContactAdap
 
     private RecentCallModel cursorToRecentCall(Cursor cursor){
         RecentCallModel recentCallModel = new RecentCallModel();
+        recentCallModel.setNumber(cursor.getString(cursor.getColumnIndex(CallLog.Calls.NUMBER)));
         if (cursor.getString(cursor.getColumnIndex(CallLog.Calls.CACHED_NAME)) == null) {
             recentCallModel.setHeader(cursor.getString(cursor.getColumnIndex(CallLog.Calls.NUMBER)));
         } else {
             recentCallModel.setHeader(cursor.getString(cursor.getColumnIndex(CallLog.Calls.CACHED_NAME)));
         }
-        recentCallModel.setDate(cursor.getString(cursor.getColumnIndex(CallLog.Calls.DATE)));
+        Date callDayTime = new Date(Long.valueOf(cursor.getString(cursor.getColumnIndex(CallLog.Calls.DATE))));
+        recentCallModel.setDate(callDayTime.toString());
         return recentCallModel;
+    }
+
+    public void addCallToBlockedNumbers(RecentCallModel call){
+        getContactByPhone(call.getNumber());
+        PhonesDataSource phonesDataSource = new PhonesDataSource(getActivity());
+        phonesDataSource.open();
+        phonesDataSource.blockNumber(call.getNumber());
+        phonesDataSource.close();
+    }
+
+    public void getContactByPhone(String phone){
+        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phone));
+        Cursor contact_cursor = getActivity().getContentResolver().query(uri, new String[]{ContactsContract.PhoneLookup._ID}, null, null, null);
+        if (contact_cursor.moveToFirst()){
+            Long contact_id = contact_cursor.getLong(contact_cursor.getColumnIndex(ContactsContract.PhoneLookup._ID));
+        }
+
     }
 
     @Override
     public void onItemClick(View v, int position) {
-        //storeContact(ContactModel, numbers);
+        addCallToBlockedNumbers(recentCallModelList.get(position));
+        Intent startMyBlackList = new Intent(getActivity(), myBlackList.class);
+        startActivity(startMyBlackList);
+        getActivity().finish();
     }
 
 

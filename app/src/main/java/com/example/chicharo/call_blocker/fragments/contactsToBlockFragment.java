@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +43,7 @@ public class contactsToBlockFragment extends Fragment implements ContactAdapter.
 
     public List<ContactModel> getAllContacts() {
         contacts = new ArrayList<ContactModel>();
-        Cursor cursor = getActivity().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
+        Cursor cursor = getActivity().getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
         while(cursor.moveToNext()){
             ContactModel ContactModel = ContactToOwnContactModel(cursor);
             if(ContactModel != null){
@@ -57,18 +58,25 @@ public class contactsToBlockFragment extends Fragment implements ContactAdapter.
         ContactModel ContactModel = new ContactModel();
         int hasPhoneNumber = cursor.getInt(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER));
         if (hasPhoneNumber == 1) {
+            String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+            Cursor pCur = getActivity().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+                    ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = ?",new String[]{ id }, null);
+            while (pCur.moveToNext())
+            {
+                String contactNumber = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                ContactModel.addPhoneNumber(contactNumber);
+            }
+            pCur.close();
             ContactModel.setContactName(cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)));
-            ContactModel.setPhoneNumber(cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
         } else {
             return null;
         }
         return ContactModel;
     }
 
-    public void addContactToBlockedContacts(int position){
-        ContactModel contact = contacts.get(position);
+    public void addContactToBlockedContacts(ContactModel contact){
         List<String> numbers = new ArrayList<>();
-        numbers.add(contact.getPhoneNumber());
+        numbers.addAll(contact.getPhoneNumbers());
         ContactsDataSource contactsDataSource = new ContactsDataSource(getActivity());
         contactsDataSource.open();
         contactsDataSource.addBlockedContact(contact.getContactName(), numbers);
@@ -77,7 +85,7 @@ public class contactsToBlockFragment extends Fragment implements ContactAdapter.
 
     @Override
     public void onItemClick(View v, int position) {
-        addContactToBlockedContacts(position);
+        addContactToBlockedContacts(contacts.get(position));
         Intent startMyBlackList = new Intent(getActivity(), myBlackList.class);
         startActivity(startMyBlackList);
         getActivity().finish();

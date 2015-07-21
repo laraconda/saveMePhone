@@ -79,7 +79,7 @@ public class ContactsDataSource {
         while (cursor.moveToNext()) {
             ContactModel contact = cursorToContact(cursor);
             long contactPhoneId = contactsPhonesDataSource.phonesOfContact(contact.get_id()).get(0);
-            contact.setPhoneNumber(phonesDataSource.getPhone(contactPhoneId).getNumber());
+            contact.addPhoneNumber(phonesDataSource.getPhone(contactPhoneId).getNumber());
             contactList.add(contact);
         }
         // make sure to close the cursor

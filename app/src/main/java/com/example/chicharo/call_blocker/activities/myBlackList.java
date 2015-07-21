@@ -25,6 +25,7 @@ public class myBlackList extends ActionBarActivity implements View.OnClickListen
     private static final String regexIsAValidPhoneNumber = "^[0-9]{8,12}$";
     private EditText editTextAddNewPhone;
     private ContactAdapter blockedContactAdapter;
+    // We'll use ContactModel as a way to show data. Not all values are contacts.
     List<ContactModel> values;
     RecyclerView recyclerViewBlockedContacts;
 

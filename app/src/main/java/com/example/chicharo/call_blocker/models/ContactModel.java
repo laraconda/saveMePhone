@@ -1,11 +1,14 @@
 package com.example.chicharo.call_blocker.models;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ContactModel {
 
     private long _id;
     private String contactName;
-    private String phoneNumber;
+    private List<String> phoneNumbers = new ArrayList<>();
 
     public String getContactName() {
         return contactName;
@@ -16,11 +19,15 @@ public class ContactModel {
     }
 
     public String getPhoneNumber() {
-        return phoneNumber;
+        return phoneNumbers.get(0);
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public List<String> getPhoneNumbers(){
+        return phoneNumbers;
+    }
+
+    public void addPhoneNumber(String number){
+        this.phoneNumbers.add(number);
     }
 
     public long get_id() {
@@ -30,4 +37,6 @@ public class ContactModel {
     public void set_id(long _id) {
         this._id = _id;
     }
+
+
 }
