@@ -31,7 +31,7 @@ import java.util.Date;
 import java.util.List;
 
 
-public class recentsCallsToBlockFragment extends Fragment implements ContactAdapter.onItemClickListener{
+public class recentsCallsToBlockFragment extends Fragment implements RecentCallAdapter.onItemClickListener{
 
     List<RecentCallModel> recentCallModelList;
     @Nullable
@@ -43,6 +43,7 @@ public class recentsCallsToBlockFragment extends Fragment implements ContactAdap
         RecyclerView recyclerView = (RecyclerView)rootView.findViewById(R.id.recycler_blocked_contacts);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         RecentCallAdapter biValueAdapter = new RecentCallAdapter(getRecentCalls(20));
+        biValueAdapter.SetOnItemClickListener(this);
         recyclerView.setAdapter(biValueAdapter);
         return rootView;
     }
@@ -84,22 +85,48 @@ public class recentsCallsToBlockFragment extends Fragment implements ContactAdap
         phonesDataSource.close();
     }
 
-    public void getContactByPhone(String phone){
+    public ContactModel getContactByPhone(String phone){
         Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phone));
-        Cursor contact_cursor = getActivity().getContentResolver().query(uri, new String[]{ContactsContract.PhoneLookup._ID}, null, null, null);
+        Cursor contact_cursor = getActivity().getContentResolver().query(uri, new String[]{ContactsContract.PhoneLookup._ID, ContactsContract.PhoneLookup.DISPLAY_NAME}, null, null, null);
         if (contact_cursor.moveToFirst()){
-            Long contact_id = contact_cursor.getLong(contact_cursor.getColumnIndex(ContactsContract.PhoneLookup._ID));
+            ContactModel contactModel = new ContactModel();
+            String id = contact_cursor.getString(contact_cursor.getColumnIndex(ContactsContract.Contacts._ID));
+            Cursor pCur = getActivity().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+                    ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = ?",new String[]{ id }, null);
+            while (pCur.moveToNext())
+            {
+                String contactNumber = pCur.getString(pCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                contactModel.addPhoneNumber(contactNumber);
+            }
+            pCur.close();
+            contactModel.setContactName(contact_cursor.getString(contact_cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME)));
+            contact_cursor.close();
+            return contactModel;
         }
-
+        contact_cursor.close();
+        return null;
     }
 
     @Override
     public void onItemClick(View v, int position) {
-        addCallToBlockedNumbers(recentCallModelList.get(position));
+        ContactModel contactModel = getContactByPhone(recentCallModelList.get(position).getNumber());
+        if (contactModel == null) {
+            addCallToBlockedNumbers(recentCallModelList.get(position));
+        } else {
+            addContactToBlockedContacts(contactModel);
+        }
         Intent startMyBlackList = new Intent(getActivity(), myBlackList.class);
         startActivity(startMyBlackList);
         getActivity().finish();
     }
 
+    public void addContactToBlockedContacts(ContactModel contact) {
+        List<String> numbers = new ArrayList<>();
+        numbers.addAll(contact.getPhoneNumbers());
+        ContactsDataSource contactsDataSource = new ContactsDataSource(getActivity());
+        contactsDataSource.open();
+        contactsDataSource.addBlockedContact(contact.getContactName(), numbers);
+        contactsDataSource.close();
+    }
 
 }

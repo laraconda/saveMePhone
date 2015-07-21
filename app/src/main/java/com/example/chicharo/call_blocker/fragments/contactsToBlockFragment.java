@@ -16,6 +16,7 @@ import android.provider.ContactsContract;
 import com.example.chicharo.call_blocker.R;
 import com.example.chicharo.call_blocker.activities.myBlackList;
 import com.example.chicharo.call_blocker.adapters.ContactAdapter;
+import com.example.chicharo.call_blocker.adapters.RecentCallAdapter;
 import com.example.chicharo.call_blocker.dataBases.ContactsDataSource;
 import com.example.chicharo.call_blocker.dataBases.PhonesDataSource;
 import com.example.chicharo.call_blocker.models.ContactModel;
